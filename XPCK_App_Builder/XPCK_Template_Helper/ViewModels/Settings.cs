@@ -361,6 +361,16 @@ namespace XPCK_Template_Helper.ViewModels
 
             try
             {
+                currentFile = DIR + folder + "ApplicationIcon.png";
+                System.IO.File.Delete(currentFile);
+                resizedImage = new System.Drawing.Bitmap(originalImage, new System.Drawing.Size(100, 100));
+                resizedImage.Save(currentFile, System.Drawing.Imaging.ImageFormat.Png);
+                resizedImage.Dispose();
+            }
+            catch { errMsg += currentFile + "\n"; }
+
+            try
+            {
                 currentFile = DIR + folder + "300.png";
                 System.IO.File.Delete(currentFile);
                 resizedImage = new System.Drawing.Bitmap(originalImage, new System.Drawing.Size(300, 300));
