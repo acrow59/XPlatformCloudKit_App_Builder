@@ -15,15 +15,19 @@ namespace XPCK_Template_Helper.ViewModels
     public class Settings : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private string appName = "App Name", azureServiceAddress = "https://xplatformcloudkit.azure-mobile.net/", azureApplicationKey = "UYZnUrrabofKBELSRdRsmCGboyDGMJ15", privacyPolicy = "http://windotnet.blogspot.com/2013/11/app-privacy-policy.html", logoLoc = "";
+        private string appName = "App Name", azureServiceAddress = "https://xplatformcloudkit.azure-mobile.net/", azureApplicationKey = "UYZnUrrabofKBELSRdRsmCGboyDGMJ15", privacyPolicy = "http://windotnet.blogspot.com/2013/11/app-privacy-policy.html", logoLoc = "", win8WallLoc = "", phone8WallLoc = "";
         private int interval = 60, trialPeriod = 7;
-        private Boolean enableAzure = false, enableRSS = false, enableLocal = false, initialSchema = true, enableTrial = false, simulateTrial = false, fullScreen = false, autoPlay = true, disableHyerplinks = false, hyperlinksNewTab = true, lightTheme = true;
+        private Boolean enableAzure = false, enableRSS = false, enableLocal = false, initialSchema = true, enableTrial = false, simulateTrial = false, fullScreen = false, autoPlay = true, disableHyerplinks = false, hyperlinksNewTab = true, lightTheme = true, win8Wallpaper = true, phone8Wallpaper = true;
         private Group selectedGroup = new Group("Microsoft", "http://reddit.com/r/Microsoft/.rss", false);
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
+        private BackgroundWorker bw = new BackgroundWorker();
 
         public Settings()
         {
             Groups.Add(selectedGroup);
+            bw.WorkerSupportsCancellation = false;
+            bw.DoWork += bw_DoWork;
+            bw.RunWorkerCompleted += bw_RunWorkerCompleted;
         }
 
         public Group SelectedGroup { get { return selectedGroup; } set { selectedGroup = value; RaisePropertyChanged("SelectedGroup"); } }
@@ -61,6 +65,12 @@ namespace XPCK_Template_Helper.ViewModels
         public int Interval { get { return interval; } set { interval = value; } }
 
         public string LogoLoc { get { return logoLoc; } set { logoLoc = value; RaisePropertyChanged("LogoLoc"); } }
+
+        public Boolean Win8Wallpaper { get { return win8Wallpaper; } set { win8Wallpaper = value; RaisePropertyChanged("Win8Wallpaper"); } }
+        public Boolean Phone8Wallpaper { get { return phone8Wallpaper; } set { phone8Wallpaper = value; RaisePropertyChanged("Phone8Wallpaper"); } }
+
+        public string Phone8WallLoc { get { return phone8WallLoc; } set { phone8WallLoc = value; RaisePropertyChanged("Phone8WallLoc"); } }
+        public string Win8WallLoc { get { return win8WallLoc; } set { win8WallLoc = value; RaisePropertyChanged("Win8WallLoc"); } }
 
         public RelayCommand AddGroup
         {
@@ -135,6 +145,56 @@ namespace XPCK_Template_Helper.ViewModels
             }
         }
 
+        public RelayCommand BrowseForWin8Wallpaper
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    try
+                    {
+                        Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                        dlg.Filter = "Images (.png, .jpg, .gif)|*.png;*.gif;*.jpg;*.jpeg";
+                        Nullable<bool> result = dlg.ShowDialog();
+                        if (result == true)
+                        {
+                            Win8WallLoc = dlg.FileName;
+                        }
+                        else
+                        {
+                            Win8WallLoc = "Please select file";
+                        }
+                    }
+                    catch { }
+                });
+            }
+        }
+
+        public RelayCommand BrowseForPhone8Wallpaper
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    try
+                    {
+                        Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                        dlg.Filter = "Images (.png, .jpg, .gif)|*.png;*.gif;*.jpg;*.jpeg";
+                        Nullable<bool> result = dlg.ShowDialog();
+                        if (result == true)
+                        {
+                            Phone8WallLoc = dlg.FileName;
+                        }
+                        else
+                        {
+                            Phone8WallLoc = "Please select file";
+                        }
+                    }
+                    catch { }
+                });
+            }
+        }
+
         private void RaisePropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;
@@ -144,6 +204,8 @@ namespace XPCK_Template_Helper.ViewModels
             }
         }
 
+
+
         public RelayCommand SaveApp
         {
             get
@@ -152,13 +214,40 @@ namespace XPCK_Template_Helper.ViewModels
                 {
                     try
                     {
-                        CopyFolder(System.AppDomain.CurrentDomain.BaseDirectory + "/XPlatformCloudKit", System.AppDomain.CurrentDomain.BaseDirectory + "/" + AppName);
-                        if (!logoLoc.Equals(""))
-                            CopyLogos();
+                        if (!bw.IsBusy)
+                        {
+
+                            bw.RunWorkerAsync();
+                        }
                     }
                     catch { }
                 });
             }
+        }
+
+        void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            ShowDataEntry = true;
+        }
+
+        private int totalFiles = 0, finishedFiles = 0;
+        private bool showDataEntry = true;
+
+        public bool ShowDataEntry { get { return showDataEntry; } set { showDataEntry = value; RaisePropertyChanged("ShowDataEntry"); } }
+
+        public int FinishedFiles { get { return finishedFiles; } set { finishedFiles = value; RaisePropertyChanged("FinishedFiles"); } }
+        public int TotalFiles { get { return totalFiles; } set { totalFiles = value; RaisePropertyChanged("TotalFiles"); } }
+
+        private void bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ShowDataEntry = false;
+            FinishedFiles = 0;
+            TotalFiles = Directory.GetFiles(System.AppDomain.CurrentDomain.BaseDirectory + "/XPlatformCloudKit", "*.*", SearchOption.AllDirectories).Count() + 14;
+            CopyFolder(System.AppDomain.CurrentDomain.BaseDirectory + "/XPlatformCloudKit", System.AppDomain.CurrentDomain.BaseDirectory + "/" + AppName);
+            if (!logoLoc.Equals(""))
+                CopyLogos();
+            if (phone8Wallpaper == true || win8Wallpaper == true)
+                CopyWallpapers();
         }
 
         public void CopyFolder(string source, string destination)
@@ -186,6 +275,8 @@ namespace XPCK_Template_Helper.ViewModels
                         CopyWindows8Manifest(file, dest);
                     else
                         File.Copy(file, dest);
+
+                    FinishedFiles++;
                 }
                 string[] folders = Directory.GetDirectories(source);
                 foreach (string folder in folders)
@@ -330,6 +421,16 @@ namespace XPCK_Template_Helper.ViewModels
                     parts = line.Split('=');
                     content += parts[0] + "= " + (hyperlinksNewTab ? "true" : "false") + ";\n";
                 }
+                else if (line.Contains("bool EnablePhone8Background "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (phone8Wallpaper ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("bool EnableWin8Background "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (win8Wallpaper ? "true" : "false") + ";\n";
+                }
                 else
                     content += line + "\n";
             }
@@ -351,6 +452,36 @@ namespace XPCK_Template_Helper.ViewModels
             System.IO.File.WriteAllText(dest, manifest);
         }
 
+        private void CopyWallpapers()
+        {
+            string DIR = System.AppDomain.CurrentDomain.BaseDirectory + "/" + AppName;
+            string file = "/XPlatformCloudKit.Phone8/Assets/Wallpaper.png";
+
+            if (phone8Wallpaper == true)
+            {
+                try
+                {
+                    System.Drawing.Image originalImage = System.Drawing.Image.FromFile(phone8WallLoc);
+                    originalImage.Save(DIR+file, System.Drawing.Imaging.ImageFormat.Png);
+                }
+                catch { MessageBox.Show("Error copying Phone 8 Wallpaper. Make sure you have selected an image."); }
+            }
+            FinishedFiles++;
+            file = "/XPlatformCloudKit.Win8/Assets/Wallpaper.png";
+            if (win8Wallpaper == true)
+            {
+                try
+                {
+                    System.Drawing.Image originalImage = System.Drawing.Image.FromFile(win8WallLoc);
+                    originalImage.Save(DIR+file, System.Drawing.Imaging.ImageFormat.Png);
+                }
+                catch (Exception e) { 
+                    MessageBox.Show("Error copying Win 8 Wallpaper. Make sure you have selected an image."); 
+                }
+            }
+            FinishedFiles++;
+        }
+
         private void CopyLogos()
         {
             string DIR = System.AppDomain.CurrentDomain.BaseDirectory + "/" + AppName;
@@ -368,7 +499,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
-
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "300.png";
@@ -378,7 +509,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
-
+            FinishedFiles++;
             folder = "/XPlatformCloudKit.Phone8/Assets/Tiles/";
             try
             {
@@ -389,6 +520,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "FlipCycleTileLarge.png";
@@ -398,6 +530,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "FlipCycleTileSmall.png";
@@ -407,6 +540,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "IconicTileMediumLarge.png";
@@ -416,6 +550,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "IconicTileSmall.png";
@@ -426,6 +561,8 @@ namespace XPCK_Template_Helper.ViewModels
             }
             catch { errMsg += currentFile + "\n"; }
 
+
+            FinishedFiles++;
             folder = "/XPlatformCloudKit.Win8/Assets/";
             try
             {
@@ -436,6 +573,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "SmallLogo.png";
@@ -445,6 +583,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "SplashScreen.png";
@@ -454,6 +593,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "StoreLogo.png";
@@ -463,6 +603,7 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
             try
             {
                 currentFile = DIR + folder + "WideLogo.png";
@@ -472,8 +613,10 @@ namespace XPCK_Template_Helper.ViewModels
                 resizedImage.Dispose();
             }
             catch { errMsg += currentFile + "\n"; }
+            FinishedFiles++;
 
             if (!errMsg.Equals("")) MessageBox.Show("Encountered Errors Copying Following Images:\n" + errMsg);
         }
     }
 }
+

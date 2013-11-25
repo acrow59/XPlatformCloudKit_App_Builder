@@ -12,7 +12,17 @@ namespace XPCK_Template_Helper.ViewModels
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((Boolean)value)==true?Visibility.Visible:Visibility.Collapsed;
+            try
+            {
+                if(parameter.Equals("1"))
+                    return ((Boolean)value) == true ? Visibility.Collapsed : Visibility.Visible;
+                else
+                    return ((Boolean)value) == true ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch
+            {
+                return ((Boolean)value) == true ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

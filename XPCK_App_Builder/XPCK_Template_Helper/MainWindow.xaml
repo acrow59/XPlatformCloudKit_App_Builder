@@ -20,7 +20,11 @@
 
         <TextBlock Text="XPlatform Cloud Kit Template Helper" FontSize="30" VerticalAlignment="Center" Margin="20,0,0,0"/>
 
-        <ScrollViewer Grid.Row="1" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" Margin="20,5,20,5" PanningMode="HorizontalOnly" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowDataEntry, Converter={StaticResource VisibilityConverter}, ConverterParameter=1}">
+            <TextBlock Text="Generating App. Please Wait."  />
+            <ProgressBar Maximum="{Binding TotalFiles}" Value="{Binding FinishedFiles}" />
+        </StackPanel>
+        <ScrollViewer Visibility="{Binding ShowDataEntry, Converter={StaticResource VisibilityConverter}}" x:Name="DataScroll" Grid.Row="1" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" Margin="20,5,20,5" PanningMode="HorizontalOnly" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
             <StackPanel Orientation="Horizontal">
 
                 <StackPanel x:Name="GloblProperties" Width="300">
@@ -91,14 +95,14 @@
                         <TextBlock Text="Trial Period (Days):"  FontSize="20" VerticalAlignment="Center" />
                         <TextBox Text="{Binding TrialPeriod,  Mode=TwoWay}" FontSize="18" Margin="15,10,10,0" ToolTip="Number of days until app expires. (Set to negative value to simulate trial expiration.)"/>
                     </StackPanel>
-                    
+
                     <StackPanel x:Name="Windows8Options" Width="300" Margin="0,25,0,0">
                         <TextBlock Text="Windows 8 Options" FontSize="25" FontWeight="SemiBold" />
                         <CheckBox Content="Use Light Theme For Windows?" IsChecked="{Binding LightTheme,  Mode=TwoWay}" VerticalAlignment="Center" Margin="15,20,15,0" FontSize="15" ToolTip="Check for light theme (white background, black text). Uncheck for dark theme (black background, white text) NOTE: This may be overwritten if you use custom backgrond &amp; font colors."/>
                         <TextBlock Text="Privacy Policy:"  FontSize="15" Margin="15,5,0,0" />
                         <TextBox Text="{Binding PrivacyPolicy, Mode=TwoWay}" VerticalAlignment="Center" Margin="15,5,15,0" FontSize="15" ToolTip="This is a URL to a privacy statement for your app. You can use the default policy if you don't have one of your own."/>
                     </StackPanel>
-                    
+
                     <StackPanel x:Name="YoutubeLinkOptions" Width="300" Margin="0,25,0,0">
                         <TextBlock Text="Youtube Link Options" FontSize="25" FontWeight="SemiBold" />
                         <CheckBox Content="Force Youtube Videos Fullscreen?" IsChecked="{Binding FullScreen,  Mode=TwoWay}" VerticalAlignment="Center" Margin="15,20,15,0" FontSize="15" ToolTip="Forces YouTube videos to open in fullscreen."/>
@@ -113,19 +117,37 @@
                 </StackPanel>
 
                 <StackPanel x:Name="Logo" Width="300">
-                    <TextBlock Text="Logo" FontSize="25" FontWeight="SemiBold" Margin="0,0,0,0" />
-                    <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Select A Logo:"  FontSize="20" Margin="20" />
-                        <Button Content="Browse"   Width="120" Height="40" Command="{Binding BrowseForLogo}"/>
+                    <TextBlock Text="Logo &amp; Wallpaper" FontSize="25" FontWeight="SemiBold" Margin="0,0,0,0" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="Select A Logo:"  FontSize="20" Margin="20" />
+                        <Button Content="Browse"   Width="80" Height="40" Command="{Binding BrowseForLogo}"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding LogoLoc}" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,0" />
-                    <Image Width="200" Source="{Binding LogoLoc, Converter={StaticResource BitmapConverter}}" Height="200" Stretch="Fill" Margin="0,15,0,0" />
+                    <Image Width="50" Source="{Binding LogoLoc, Converter={StaticResource BitmapConverter}}" Height="50" Stretch="Fill" />
+                    <TextBlock FontSize="12" Text="{Binding LogoLoc}" HorizontalAlignment="Center" />
+
+                    <CheckBox Content="Enable Windows 8 Wallpaper" IsChecked="{Binding Win8Wallpaper}" Margin="15,5,0,0" />
+                    <CheckBox x:Name="EnablePhone8Wallpaper" Content="Enable Phone 8 Wallpaper" IsChecked="{Binding Phone8Wallpaper}" Margin="15,5,0,5" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding Win8Wallpaper, Converter={StaticResource VisibilityConverter}}">
+                        <TextBlock Text="Windows 8 Wallpaper:" FontSize="20" Margin="0,0,5,0" />
+                        <Button Content="Browse"   Width="80" HorizontalAlignment="Right" Height="40" Command="{Binding BrowseForWin8Wallpaper}"/>
+                    </StackPanel>
+                    <Image Width="120" Source="{Binding Win8WallLoc, Converter={StaticResource BitmapConverter}}" Height="60" Stretch="Uniform"  Visibility="{Binding Win8Wallpaper, Converter={StaticResource VisibilityConverter}}"/>
+                    <TextBlock FontSize="12" Text="{Binding Win8WallLoc}" HorizontalAlignment="Center" Visibility="{Binding Win8Wallpaper, Converter={StaticResource VisibilityConverter}}"/>
+
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding Phone8Wallpaper, Converter={StaticResource VisibilityConverter}}">
+                        <TextBlock Text="Phone 8 Wallpaper:"  FontSize="20" Margin="20" />
+                        <Button Content="Browse"   Width="80" Height="40" Command="{Binding BrowseForPhone8Wallpaper}"/>
+                    </StackPanel>
+                    <Image Width="70" Source="{Binding Phone8WallLoc, Converter={StaticResource BitmapConverter}}" Height="100" Stretch="Uniform"  Visibility="{Binding Phone8Wallpaper, Converter={StaticResource VisibilityConverter}}"/>
+                    <TextBlock FontSize="12" Text="{Binding Phone8WallLoc}" HorizontalAlignment="Center" Visibility="{Binding Phone8Wallpaper, Converter={StaticResource VisibilityConverter}}" />
                 </StackPanel>
-                
-                
+
+
+
             </StackPanel>
         </ScrollViewer>
-        
+
         <Button Grid.Row="2" Content="Create App!" Command="{Binding SaveApp}" />
 
     </Grid>
