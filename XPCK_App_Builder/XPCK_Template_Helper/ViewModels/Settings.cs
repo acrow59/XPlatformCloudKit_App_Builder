@@ -15,9 +15,9 @@ namespace XPCK_Template_Helper.ViewModels
     public class Settings : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private string appName = "App Name", azureServiceAddress = "https://xplatformcloudkit.azure-mobile.net/", azureApplicationKey = "UYZnUrrabofKBELSRdRsmCGboyDGMJ15", privacyPolicy = "http://windotnet.blogspot.com/2013/11/app-privacy-policy.html", logoLoc = "", win8WallLoc = "", phone8WallLoc = "";
-        private int interval = 60, trialPeriod = 7;
-        private Boolean enableAzure = false, enableRSS = false, enableLocal = false, initialSchema = true, enableTrial = false, simulateTrial = false, fullScreen = false, autoPlay = true, disableHyerplinks = false, hyperlinksNewTab = true, lightTheme = true, win8Wallpaper = true, phone8Wallpaper = true;
+        private string appName = "App Name", azureServiceAddress = "https://xplatformcloudkit.azure-mobile.net/", azureApplicationKey = "UYZnUrrabofKBELSRdRsmCGboyDGMJ15", privacyPolicy = "http://windotnet.blogspot.com/2013/11/app-privacy-policy.html", logoLoc = "", win8WallLoc = "", phone8WallLoc = "", appIdPhone8 = "test_client", adIdPhone8 = "Image480_80", appIdWin8 = "d25517cb-12d4-4699-8bdc-52040c712cab", adIdWin8 = "10042999";
+        private int interval = 60, trialPeriod = 7, promoRuns=3;
+        private Boolean enableAzure = false, enableRSS = false, enableLocal = false, initialSchema = true, enableTrial = false, simulateTrial = false, fullScreen = false, autoPlay = true, disableHyerplinks = false, hyperlinksNewTab = true, lightTheme = true, win8Wallpaper = false, phone8Wallpaper = false, enablePromo = true, enablePhone8Ads = false, hideAdsPurchasePhone8 = false, enableWin8Ads = false, hideAdsPurchaseWin8 = false;
         private Group selectedGroup = new Group("Microsoft", "http://reddit.com/r/Microsoft/.rss", false);
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
         private BackgroundWorker bw = new BackgroundWorker();
@@ -30,6 +30,7 @@ namespace XPCK_Template_Helper.ViewModels
             bw.RunWorkerCompleted += bw_RunWorkerCompleted;
         }
 
+        #region BindingValues
         public Group SelectedGroup { get { return selectedGroup; } set { selectedGroup = value; RaisePropertyChanged("SelectedGroup"); } }
 
         public ObservableCollection<Group> Groups { get { return groups; } set { groups = value; RaisePropertyChanged("Groups"); } }
@@ -72,6 +73,22 @@ namespace XPCK_Template_Helper.ViewModels
         public string Phone8WallLoc { get { return phone8WallLoc; } set { phone8WallLoc = value; RaisePropertyChanged("Phone8WallLoc"); } }
         public string Win8WallLoc { get { return win8WallLoc; } set { win8WallLoc = value; RaisePropertyChanged("Win8WallLoc"); } }
 
+
+        public Boolean EnablePromo { get { return enablePromo; } set { enablePromo = value; RaisePropertyChanged("EnablePromo"); } }
+        public int PromoRuns { get { return promoRuns; } set { promoRuns = value; } }
+
+        public Boolean EnablePhone8Ads { get { return enablePhone8Ads; } set { enablePhone8Ads = value; RaisePropertyChanged("EnablePhone8Ads"); } }
+        public Boolean HideAdsPurchasePhone8 { get { return hideAdsPurchasePhone8; } set { hideAdsPurchasePhone8 = value; RaisePropertyChanged("HideAdsPurchasePhone8"); } }
+        public string AppIdPhone8 { get { return appIdPhone8; } set { appIdPhone8 = value; RaisePropertyChanged("AppIdPhone8"); } }
+        public string AdIdPhone8 { get { return adIdPhone8; } set { adIdPhone8 = value; RaisePropertyChanged("AdIdPhone8"); } }
+
+        public Boolean EnableWin8Ads { get { return enableWin8Ads; } set { enableWin8Ads = value; RaisePropertyChanged("EnableWin8Ads"); } }
+        public Boolean HideAdsPurchaseWin8 { get { return hideAdsPurchaseWin8; } set { hideAdsPurchaseWin8 = value; RaisePropertyChanged("HideAdsPurchaseWin8"); } }
+        public string AppIdWin8 { get { return appIdWin8; } set { appIdWin8 = value; RaisePropertyChanged("AppIdWin8"); } }
+        public string AdIdWin8 { get { return adIdWin8; } set { adIdWin8 = value; RaisePropertyChanged("AdIdWin8"); } }
+        #endregion
+
+        #region Commands
         public RelayCommand AddGroup
         {
             get
@@ -224,7 +241,9 @@ namespace XPCK_Template_Helper.ViewModels
                 });
             }
         }
+        #endregion
 
+        #region workers
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             ShowDataEntry = true;
@@ -249,7 +268,9 @@ namespace XPCK_Template_Helper.ViewModels
             if (phone8Wallpaper == true || win8Wallpaper == true)
                 CopyWallpapers();
         }
+        #endregion
 
+        #region App Generator Methods
         public void CopyFolder(string source, string destination)
         {
             try
@@ -430,6 +451,56 @@ namespace XPCK_Template_Helper.ViewModels
                 {
                     parts = line.Split('=');
                     content += parts[0] + "= " + (win8Wallpaper ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("bool EnableAppPromoRatingReminder "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (enablePromo ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("int NumberOfRunsBeforeRateReminder "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + promoRuns + ";\n";
+                }
+                else if (line.Contains("bool EnablePubcenterAdsPhone8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (enablePhone8Ads ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("bool HideAdsIfPurchasedPhone8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (hideAdsPurchasePhone8 ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("string PubcenterApplicationIdPhone8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= \"" + appIdPhone8 + "\";\n";
+                }
+                else if (line.Contains("string PubcenterAdUnitIdPhone8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= \"" + adIdPhone8 + "\";\n";
+                }
+                else if (line.Contains("bool EnablePubcenterAdsWin8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (enableWin8Ads ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("bool HideAdsIfPurchasedWin8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= " + (hideAdsPurchaseWin8 ? "true" : "false") + ";\n";
+                }
+                else if (line.Contains("string PubcenterApplicationIdWin8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= \"" + appIdWin8 + "\";\n";
+                }
+                else if (line.Contains("string PubcenterAdUnitIdWin8 "))
+                {
+                    parts = line.Split('=');
+                    content += parts[0] + "= \"" + adIdWin8 + "\";\n";
                 }
                 else
                     content += line + "\n";
@@ -617,6 +688,7 @@ namespace XPCK_Template_Helper.ViewModels
 
             if (!errMsg.Equals("")) MessageBox.Show("Encountered Errors Copying Following Images:\n" + errMsg);
         }
+        #endregion
     }
 }
 

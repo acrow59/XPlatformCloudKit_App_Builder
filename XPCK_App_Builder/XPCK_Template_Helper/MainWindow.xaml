@@ -116,7 +116,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <StackPanel x:Name="Logo" Width="300">
+                <StackPanel x:Name="Logo" Width="300" >
                     <TextBlock Text="Logo &amp; Wallpaper" FontSize="25" FontWeight="SemiBold" Margin="0,0,0,0" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBlock Text="Select A Logo:"  FontSize="20" Margin="20" />
@@ -134,13 +134,46 @@
                     <Image Width="120" Source="{Binding Win8WallLoc, Converter={StaticResource BitmapConverter}}" Height="60" Stretch="Uniform"  Visibility="{Binding Win8Wallpaper, Converter={StaticResource VisibilityConverter}}"/>
                     <TextBlock FontSize="12" Text="{Binding Win8WallLoc}" HorizontalAlignment="Center" Visibility="{Binding Win8Wallpaper, Converter={StaticResource VisibilityConverter}}"/>
 
-                    
+
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding Phone8Wallpaper, Converter={StaticResource VisibilityConverter}}">
                         <TextBlock Text="Phone 8 Wallpaper:"  FontSize="20" Margin="20" />
                         <Button Content="Browse"   Width="80" Height="40" Command="{Binding BrowseForPhone8Wallpaper}"/>
                     </StackPanel>
                     <Image Width="70" Source="{Binding Phone8WallLoc, Converter={StaticResource BitmapConverter}}" Height="100" Stretch="Uniform"  Visibility="{Binding Phone8Wallpaper, Converter={StaticResource VisibilityConverter}}"/>
                     <TextBlock FontSize="12" Text="{Binding Phone8WallLoc}" HorizontalAlignment="Center" Visibility="{Binding Phone8Wallpaper, Converter={StaticResource VisibilityConverter}}" />
+                </StackPanel>
+
+                <StackPanel x:Name="PromoAndAds" Width="310" Margin="10,0,0,0">
+                    <TextBlock Text="App Promo Options" FontSize="25" FontWeight="SemiBold" Margin="0,0,0,20" />
+                    <CheckBox Content="Enable App Rating Reminder" IsChecked="{Binding EnablePromo}" Margin="15,0,0,0" FontSize="15" ToolTip="Check to remind user to rate app." />
+
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding EnablePromo, Converter={StaticResource VisibilityConverter}}" Margin="45,5,0,15">
+                        <TextBlock Text="Number of runs before reminder:"  FontSize="15" VerticalAlignment="Center" />
+                        <TextBox Text="{Binding PromoRuns,  Mode=TwoWay}" VerticalAlignment="Center" FontSize="15" Margin="15,0,10,0" ToolTip="Number of times app can be launched before being asked to rate the app."/>
+                    </StackPanel>
+
+                    <TextBlock Text="Advertising Options" FontSize="25" FontWeight="SemiBold" Margin="0,5,0,10" />
+                    <TextBlock Text="Phone 8" FontSize="22" FontWeight="SemiBold" Margin="10,0,0,0" />
+
+                    <CheckBox Content="Enable PubCenter Ads - Phone8" IsChecked="{Binding EnablePhone8Ads}" Margin="15,0,0,0" FontSize="15" ToolTip="Check to enable advertisements" />
+                    <CheckBox Content="Hide Ads If Purchased - Phone8" IsChecked="{Binding HideAdsPurchasePhone8}" Margin="15,0,0,0" FontSize="15" Visibility="{Binding EnablePhone8Ads, Converter={StaticResource VisibilityConverter}}" ToolTip="Check to hide ads if user purchases app." />
+
+                    <TextBlock Text="PubCenter Application ID - Phone8"  FontSize="15" VerticalAlignment="Center" Margin="20,5,0,0" Visibility="{Binding EnablePhone8Ads, Converter={StaticResource VisibilityConverter}}"/>
+                    <TextBox Text="{Binding AppIdPhone8,  Mode=TwoWay}" VerticalAlignment="Center" FontSize="15" Margin="25,0,10,0" ToolTip="Number of times app can be launched before being asked to rate the app." Visibility="{Binding EnablePhone8Ads, Converter={StaticResource VisibilityConverter}}"/>
+
+                    <TextBlock Text="PubCenter Ad Unit ID - Phone8"  FontSize="15" VerticalAlignment="Center" Margin="20,5,0,0" Visibility="{Binding EnablePhone8Ads, Converter={StaticResource VisibilityConverter}}"/>
+                    <TextBox Text="{Binding AdIdPhone8,  Mode=TwoWay}" VerticalAlignment="Center" FontSize="15" Margin="25,0,10,0" ToolTip="Number of times app can be launched before being asked to rate the app." Visibility="{Binding EnablePhone8Ads, Converter={StaticResource VisibilityConverter}}"/>
+
+                    <TextBlock Text="Windows 8" FontSize="22" FontWeight="SemiBold" Margin="10,10,0,0" />
+
+                    <CheckBox Content="Enable PubCenter Ads - Win8" IsChecked="{Binding EnableWin8Ads}" Margin="15,0,0,0" FontSize="15" ToolTip="Check to enable advertisements" />
+                    <CheckBox Content="Hide Ads If Purchased - Win8" IsChecked="{Binding HideAdsPurchaseWin8}" Margin="15,0,0,0" FontSize="15" Visibility="{Binding EnableWin8Ads, Converter={StaticResource VisibilityConverter}}" ToolTip="Check to hide ads if user purchases app." />
+
+                    <TextBlock Text="PubCenter Application ID - Win8"  FontSize="15" VerticalAlignment="Center" Margin="20,5,0,0" Visibility="{Binding EnableWin8Ads, Converter={StaticResource VisibilityConverter}}"/>
+                    <TextBox Text="{Binding AppIdWin8,  Mode=TwoWay}" VerticalAlignment="Center" FontSize="15" Margin="25,0,10,0" ToolTip="Number of times app can be launched before being asked to rate the app." Visibility="{Binding EnableWin8Ads, Converter={StaticResource VisibilityConverter}}"/>
+
+                    <TextBlock Text="PubCenter Ad Unit ID - Win8"  FontSize="15" VerticalAlignment="Center" Margin="20,5,0,0" Visibility="{Binding EnableWin8Ads, Converter={StaticResource VisibilityConverter}}"/>
+                    <TextBox Text="{Binding AdIdWin8,  Mode=TwoWay}" VerticalAlignment="Center" FontSize="15" Margin="25,0,10,0" ToolTip="Number of times app can be launched before being asked to rate the app." Visibility="{Binding EnableWin8Ads, Converter={StaticResource VisibilityConverter}}"/>
                 </StackPanel>
 
 
