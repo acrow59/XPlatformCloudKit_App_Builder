@@ -261,8 +261,8 @@ namespace XPCK_Template_Helper.ViewModels
         {
             ShowDataEntry = false;
             FinishedFiles = 0;
-            TotalFiles = Directory.GetFiles(System.AppDomain.CurrentDomain.BaseDirectory + "/XPlatformCloudKit", "*.*", SearchOption.AllDirectories).Count() + 14;
-            CopyFolder(System.AppDomain.CurrentDomain.BaseDirectory + "/XPlatformCloudKit", System.AppDomain.CurrentDomain.BaseDirectory + "/" + AppName);
+            TotalFiles = Directory.GetFiles(System.AppDomain.CurrentDomain.BaseDirectory + "../XPlatformCloudKit", "*.*", SearchOption.AllDirectories).Count() + 14;
+            CopyFolder(System.AppDomain.CurrentDomain.BaseDirectory + "../XPlatformCloudKit", System.AppDomain.CurrentDomain.BaseDirectory + "/" + AppName);
             if (!logoLoc.Equals(""))
                 CopyLogos();
             if (phone8Wallpaper == true || win8Wallpaper == true)
@@ -357,7 +357,7 @@ namespace XPCK_Template_Helper.ViewModels
                     parts = line.Split('=');
                     content += parts[0] + "= " + (enableRSS ? "true" : "false") + ";\n";
                 }
-                else if (line.Contains("RssSource[] RssAddressCollection"))
+                else if (line.Contains("UrlSource[] RssAddressCollection"))
                 {
                     inRssAddress = true;
                     content += line + "\n";
@@ -370,7 +370,7 @@ namespace XPCK_Template_Helper.ViewModels
                         inRssAddress = false;
                         foreach (Group group in groups)
                         {
-                            content += "new RssSource{Url = \"" + group.URL + "\", Group = \"" + group.Key + "\"},\n";
+                            content += "new UrlSource{Url = \"" + group.URL + "\", Group = \"" + group.Key + "\"},\n";
                             if (group.EnableFullScreen)
                             {
                                 FullScreenGroups += "\"" + group.Key + "\", ";
